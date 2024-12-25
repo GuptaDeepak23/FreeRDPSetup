@@ -1,22 +1,22 @@
 name: Free RDP Tunnel by revWhiteShadow
 
 on:
-  workflow_dispatch:  # This allows you to manually trigger the workflow
+  workflow_dispatch:  # Manually trigger the workflow from GitHub UI
 
 jobs:
   setup-rdp-tunnel:
-    runs-on: windows-latest  # This specifies the runner's OS
+    runs-on: windows-latest  # This specifies the OS for the runner (Windows)
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2  # This step checks out the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2  # Checkout the repository code
 
-      - name: Download and Install Playit
+      - name: Install Playit
         run: |
           Invoke-WebRequest -Uri "https://github.com/playit-cloud/playit-agent/releases/download/v0.15.26/playit-windows-x86_64-signed.exe" -OutFile "$env:USERPROFILE\playit.exe"
-          Start-Sleep -Seconds 5  # Give some time for the download to complete
+          Start-Sleep -Seconds 5  # Wait for the download to complete
 
-      - name: Enable Remote Desktop (RDP) and Sound
+      - name: Enable Remote Desktop and Sound
         run: |
           # Enable RDP
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
@@ -26,7 +26,7 @@ jobs:
           # Enable Audio Redirection
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "fDisableAudio" -Value 0
 
-          # Start Windows Audio Service
+          # Start Audio Service
           Start-Service -Name "Audiosrv"
           Set-Service -Name "Audiosrv" -StartupType Automatic
 
@@ -36,11 +36,13 @@ jobs:
 
       - name: Start Playit and Set Up RDP Tunnel
         env:
-          PLAYIT_AUTH_KEY: ${{ secrets.PLAYIT_AUTH_KEY }}  # Ensure secret key is stored in GitHub Secrets
+          PLAYIT_AUTH_KEY: ${{ secrets.PLAYIT_AUTH_KEY }}  # Use secret for Playit authorization
         run: |
+          # Start Playit with the secret key
           Start-Process -FilePath "$env:USERPROFILE\playit.exe" -ArgumentList "--secret $env:PLAYIT_AUTH_KEY" -NoNewWindow -Wait
+          # Start Playit in the background
           Start-Process -FilePath "$env:USERPROFILE\playit.exe" -NoNewWindow
 
       - name: Keep the GitHub Action Runner Alive
         run: |
-          Start-Sleep -Seconds 11800  # Adjust the duration based on your needs
+          Start-Sleep -Seconds 11800  # Adjust duration as necessary to keep the runner alive
