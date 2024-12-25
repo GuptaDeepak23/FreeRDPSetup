@@ -31,9 +31,9 @@ jobs:
           Set-Service -Name "Audiosrv" -StartupType Automatic
 
       - name: Set RDP Password
-  run: |
-    $password = ConvertTo-SecureString -AsPlainText "Magisk1234!@" -Force
-    Set-LocalUser -Name "runneradmin" -Password $password
+        run: |
+           $ password = ConvertTo-SecureString -AsPlainText "Magisk1234!@" -Force
+           Set-LocalUser -Name "runneradmin" -Password $password
       - name: Start Playit and Set Up RDP Tunnel
         env:
           PLAYIT_AUTH_KEY: ${{ secrets.PLAYIT_AUTH_KEY }}  # Use secret for Playit authorization
