@@ -22,18 +22,17 @@ jobs:
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
-
           # Enable Audio Redirection
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "fDisableAudio" -Value 0
-
           # Start Audio Service
           Start-Service -Name "Audiosrv"
           Set-Service -Name "Audiosrv" -StartupType Automatic
 
       - name: Set RDP Password
         run: |
-           $ password = ConvertTo-SecureString -AsPlainText "Magisk1234!@" -Force
-           Set-LocalUser -Name "runneradmin" -Password $password
+          $password = ConvertTo-SecureString -AsPlainText "Magisk1234!@" -Force
+          Set-LocalUser -Name "runneradmin" -Password $password
+
       - name: Start Playit and Set Up RDP Tunnel
         env:
           PLAYIT_AUTH_KEY: ${{ secrets.PLAYIT_AUTH_KEY }}  # Use secret for Playit authorization
